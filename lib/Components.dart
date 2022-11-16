@@ -155,7 +155,7 @@ class Components{
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.SNACKBAR,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.black.withOpacity(0.5),
+        backgroundColor: Colors.green,
         textColor: Colors.white,
         fontSize: 15.0);
   }
