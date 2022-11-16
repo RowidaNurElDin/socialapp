@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:socialapp/Cubits/SocialCubit/cubit.dart';
+import 'package:socialapp/Cubits/SocialCubit/states.dart';
 import 'package:socialapp/Screens/Constants.dart';
 import 'package:socialapp/Screens/register_screen.dart';
 
@@ -159,81 +160,186 @@ class Components{
         fontSize: 15.0);
   }
 
-  static Widget postTile(PostModel post , UserModel user ,context , index) => Card(
+  static Widget postTile(PostModel post , UserModel user ,context
+      , index , TextEditingController commentController) => Card(
     elevation: 12,
     child: Container(
-        width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0 , right: 12 , top: 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundImage:NetworkImage(post.image!),
+      width: double.infinity,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.white
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 12.0 , right: 12 , top: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage:NetworkImage(post.image!),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left : 5.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(post.name! ,
+                          overflow: TextOverflow.fade,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black
+                          ),),
+                        SizedBox(height: 5,),
+                        Text(post.dateTime! ,
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[700]
+                          ),),
+                      ],
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left : 5.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(post.name! ,
-                              overflow: TextOverflow.fade,
-                              style: const TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black
-                              ),),
-                            SizedBox(height: 5,),
-                            Text(post.dateTime! ,
-                              style: TextStyle(
-                                  fontFamily: 'Roboto',
-                                  fontSize: 10,
-                                  color: Colors.grey[700]
-                              ),),
-                          ],
+                  ),
+                )
+
+              ],
+            ),
+          ),
+          const Divider(
+
+            thickness: 1,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(post.post! ,
+              style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey[800]
+              ),),
+          ),
+          if(post.postImage != "")
+            Center(
+                child:
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Image.network(post.postImage!),
+                )
+            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap:(){
+
+                    showModalBottomSheet(
+                        context: context,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
                         ),
-                      ),
-                    )
+                        builder: (context){
+                          return Container(
+                              height: 350,
+                              decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadiusDirectional.only(
+                                      topStart: Radius.circular(30),
+                                      topEnd: Radius.circular(30)
+                                  )
+                              ),
+                              child: post.likes.isNotEmpty ? ListView.separated(
+                                  itemBuilder: (context , index){
+                                    return Align(
+                                      alignment: AlignmentDirectional.topStart,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Row(
+                                          children: [
+                                            Stack(
+                                              alignment: AlignmentDirectional.bottomEnd,
+                                              children: [
+                                                CircleAvatar(
+                                                    radius: 20,
+                                                    backgroundImage: NetworkImage(post.likes[index].image!)),
+                                                CircleAvatar(
+                                                  radius: 8,
+                                                  backgroundColor: Colors.red[500],
+                                                  child: Icon(IconlyBroken.heart ,
+                                                      color: Colors.white,
+                                                      size: 14
+                                                  ) ,
+
+                                                ),
+
+                                              ],
+                                            ),
+                                            SizedBox(width: 10,),
+                                            Text(post.likes[index].name!)
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context,index)=> SizedBox(height: 5,),
+                                  itemCount: post.likes.length)
+                                  : Center(child:Text("No likes yet."))
+
+
+
+
+
+                          );
+                        } );
+                  },
+
+                  child: Row(children: [
+                    Icon(IconlyBroken.heart, size: 20, color: Colors.red,),
+                    Text(" ${post.likes.length} Likes" , style: TextStyle(
+                        fontSize: 12 ,
+                        color: Colors.grey[700],
+                        fontFamily: 'Roboto'
+                    ),),
+                  ],),
+                ),
+                Row(
+                  children: [
+                    Row(children: [
+                      Icon(Icons.chat_bubble_outline_outlined,
+                          size: 20,
+                          color: Colors.yellow[700] ),
+                      Text("  ${post.comments.length} Comments" , style: TextStyle(
+                          fontSize: 12 ,
+                          color: Colors.grey[700],
+                          fontFamily: 'Roboto'
+                      ),)
+                    ],),
 
                   ],
                 ),
-              ),
-              const Divider(
+              ],
+            ),
+          ),
+          const Divider(
 
-                thickness: 1,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(post.post! ,
-                  style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.grey[800]
-                  ),),
-              ),
-              if(post.postImage != "")
-                 Center(
-                  child:
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Image.network(post.postImage!),
-                  )
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            thickness: 1,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 12.0 , bottom: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
                   children: [
+                    CircleAvatar(
+                      radius: 15,
+                      backgroundImage: NetworkImage(user.image!),
+                    ),
+                    SizedBox(width: 5,),
                     InkWell(
-                      onTap:(){
-
+                      onTap: (){
                         showModalBottomSheet(
                             context: context,
                             shape: RoundedRectangleBorder(
@@ -241,141 +347,148 @@ class Components{
                             ),
                             builder: (context){
                               return Container(
-                                height: 350,
-                                decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadiusDirectional.only(
-                                        topStart: Radius.circular(30),
-                                        topEnd: Radius.circular(30)
-                                    )
-                                ),
-                                child: post.likes.isNotEmpty ? ListView.separated(
-                                    itemBuilder: (context , index){
-                                      return Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 20,
-                                            backgroundImage:NetworkImage(post.likes[index].image!),
-                                          ),
+                                  height: 350,
+                                  decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadiusDirectional.only(
+                                          topStart: Radius.circular(30),
+                                          topEnd: Radius.circular(30)
+                                      )
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        if(post.comments.isNotEmpty)
                                           Expanded(
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(left : 5.0),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(post.likes[index].name! ,
-                                                    overflow: TextOverflow.fade,
-                                                    style: const TextStyle(
-                                                        fontSize: 15,
-                                                        color: Colors.black
-                                                    ),),
-                                                ],
+                                            child: ListView.separated(
+                                                itemBuilder: (context , index){
+                                                  return  Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      CircleAvatar(
+                                                        radius: 18,
+                                                        backgroundImage:NetworkImage(post.comments[index].image!),
+                                                      ),
+                                                      Expanded(
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.only(left : 5.0),
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(post.comments[index].name! ,
+                                                                overflow: TextOverflow.fade,
+                                                                style: const TextStyle(
+                                                                    fontSize: 12,
+                                                                    color: Colors.black
+                                                                ),),
+                                                              SizedBox(height: 5,),
+                                                              Text(post.comments[index].text! ,
+                                                                style: const TextStyle(
+                                                                    fontSize: 15,
+                                                                    color: Colors.black
+                                                                ),),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      )
+
+                                                    ],
+                                                  );
+                                                },
+                                                physics: BouncingScrollPhysics(),
+                                                separatorBuilder: (context,index)=> const Divider(thickness: 1,),
+                                                itemCount: post.comments.length),
+                                          )
+                                        else
+                                          Spacer(),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: TextField(
+                                                keyboardType: TextInputType.multiline,
+                                                maxLines: null,
+                                                controller : commentController ,
+                                                decoration: InputDecoration(
+                                                  hintText: "write comment .. ",
+                                                  hintStyle: TextStyle(
+                                                    fontSize: 15,
+                                                    fontStyle: FontStyle.italic,
+                                                    color: Colors.grey[500],
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  border: OutlineInputBorder(
+                                                      borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                                                      borderSide: BorderSide(color: Constants.mainColor!, width: 1.0)),
+                                                  contentPadding: const EdgeInsets.all(5),
+
+                                                ),
                                               ),
                                             ),
-                                          )
+                                            IconButton(
+                                                onPressed: (){
+                                                  Navigator.pop(context);
+                                                  SocialCubit.get(context).addComment(
+                                                      text: commentController.text,
+                                                      postID: SocialCubit.get(context).postsIDs[index]);
+                                                  commentController.clear();
+                                                  FocusManager.instance.primaryFocus?.unfocus();
+                                                },
+                                                icon: Icon(IconlyBroken.send, color: Constants.mainColor,))
+                                          ],
+                                        )
 
-                                        ],
-                                      );
-                                    },
-                                    separatorBuilder: (context,index)=> SizedBox(height: 5,),
-                                    itemCount: post.likes.length)
-                                    : Center(child:Text("No likes yet."))
-
-
-
-
+                                      ],
+                                    ),
+                                  )
 
                               );
                             } );
                       },
-
-                      child: Row(children: [
-                        Icon(IconlyBroken.heart, size: 20, color: Colors.red,),
-                         Text(" ${post.likes.length} Likes" , style: TextStyle(
-                              fontSize: 12 ,
-                              color: Colors.grey[700],
-                              fontFamily: 'Roboto'
-                          ),),
-                      ],),
+                      child: Text("write a comment..." ,
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontSize: 10,
+                            color: Colors.grey[700]
+                        ),),
                     ),
-                    Row(
-                      children: [
-                        Row(children: [
-                          Icon(Icons.chat_bubble_outline_outlined,
-                              size: 20,
-                              color: Colors.yellow[700] ),
-                          Text(" 0 Comments" , style: TextStyle(
-                              fontSize: 12 ,
+                  ],
+                ),
+                Row(
+                  children: [
+                    MaterialButton(
+                      onPressed: (){
+                        print(SocialCubit.get(context).postsIDs.length);
+                        SocialCubit.get(context).likePost(
+                           postID : SocialCubit.get(context).postsIDs[index]);
+                      },
+                      child:Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Icon( post.isLiked == false ? IconlyBroken.heart : IconlyBold.heart , color: Colors.red, size: 15,),
+                          Text(post.isLiked == false ?" Like" : " Unlike", style: TextStyle(
+                              fontSize: 10 ,
                               color: Colors.grey[700],
                               fontFamily: 'Roboto'
                           ),)
-                        ],),
-
-                      ],
-                    ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
-              ),
-              const Divider(
-
-                thickness: 1,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0 , bottom: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 15,
-                          backgroundImage: NetworkImage(user.image!),
-                        ),
-                        SizedBox(width: 5,),
-                        Text("write a comment..." ,
-                          style: TextStyle(
-                              fontFamily: 'Roboto',
-                              fontSize: 10,
-                              color: Colors.grey[700]
-                          ),),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        MaterialButton(
-                          onPressed: (){
-                            print(SocialCubit.get(context).postsIDs.length);
-                            SocialCubit.get(context).likePost(
-                                SocialCubit.get(context).postsIDs[index]);
-                          },
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Icon(IconlyBroken.heart , color: Colors.red, size: 15,),
-                              Text(" Like" , style: TextStyle(
-                                  fontSize: 10 ,
-                                  color: Colors.grey[700],
-                                  fontFamily: 'Roboto'
-                              ),)
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
 
 
 
-                  ],
-                ),
-              ),
-
-
-
-            ],
+              ],
+            ),
           ),
 
-        ),
+
+
+        ],
+      ),
+
+    ),
   );
 
   static Widget defaultAppBar(String title, List<Widget> actions , BuildContext context)=> AppBar(

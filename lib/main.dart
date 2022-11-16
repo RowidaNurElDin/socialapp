@@ -16,7 +16,7 @@ void main() async{
   Firebase.initializeApp();
   await CacheHelper.init();
   Widget widget ;
-  uID = CacheHelper.getData(key: 'uID');
+  //uID = CacheHelper.getData(key: 'uID');
   print(uID);
 
   if(uID == null){
@@ -24,11 +24,13 @@ void main() async{
   }else{
     widget = SocialHomeScreen();
   }
-  runApp(const SocialMain());
+  runApp(SocialMain(startWidget: widget,));
 }
 
 class SocialMain extends StatelessWidget {
-  const SocialMain({Key? key}) : super(key: key);
+  final Widget? startWidget ;
+
+  SocialMain({this.startWidget});
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +38,16 @@ class SocialMain extends StatelessWidget {
       providers: [
         BlocProvider(create: (BuildContext context) => LoginCubit()),
         BlocProvider(create: (BuildContext context) => RegisterCubit()),
-        BlocProvider(create: (BuildContext context) => SocialCubit()..getUserData()..getAllUsers()..getPosts())
+        BlocProvider(create: (BuildContext context) => SocialCubit()..getUserData()..getPosts()..getAllUsers())
 
 
       ],
 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home:SocialLogin() ,
+        home:startWidget
+
+        ,
       ),
     );
   }

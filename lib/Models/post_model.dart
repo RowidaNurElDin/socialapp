@@ -13,6 +13,7 @@ class PostModel{
   String? postImage;
   List<LikeModel> likes =[];
   List<CommentModel> comments=[];
+  bool? isLiked = false;
 
   PostModel(
       { this.name,
@@ -20,7 +21,9 @@ class PostModel{
     this.image,
     this.dateTime,
     this.post,
-    this.postImage,});
+    this.postImage,
+      this.isLiked,
+      });
 
   PostModel.fromJson(Map<String,dynamic> json){
     name = json['name'];
@@ -29,12 +32,7 @@ class PostModel{
     dateTime = json['dateTime'];
     post = json['post'];
     postImage = json['postImage'];
-    // json['likes'].forEach((element){
-    //   likes.add(LikeModel.fromJson(element));
-    // });
-    // json['comments'].forEach((element){
-    //   comments.add(CommentModel.fromJson(element));
-    // });
+    isLiked = json['isLiked'];
   }
 
   Map<String,dynamic> toMap(){
@@ -46,7 +44,8 @@ class PostModel{
       'post' : post ,
       'postImage' : postImage,
       'likes' : likes,
-      'comments' : comments
+      'comments' : comments,
+      'isLiked':isLiked
     };
   }
 }

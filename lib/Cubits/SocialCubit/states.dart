@@ -44,6 +44,16 @@ class SocialLikePostsErrorState extends SocialStates{
   SocialLikePostsErrorState(this.error);
 }
 
+class SocialGetLikesSuccessState extends SocialStates{}
+
+//UNLIKE POSTS STATES
+class SocialUnlikePostsSuccessState extends SocialStates{}
+
+class SocialUnlikePostsErrorState extends SocialStates{
+  String? error ;
+  SocialUnlikePostsErrorState(this.error);
+}
+
 
 // EDITING PROFILE STATES
 class SocialUpdateProfilePicSuccessState extends SocialStates{}
@@ -98,4 +108,21 @@ class SocialSendMessageSuccessState extends SocialStates{}
 class SocialSendMessageErrorState extends SocialStates{
   String? error ;
   SocialSendMessageErrorState(this.error);
+}
+
+//COMMENTS STATES
+class SocialGetCommentsLoadingState extends SocialStates{}
+
+class SocialGetCommentsSuccessState extends SocialStates{}
+
+class SocialGetCommentsErrorState extends SocialStates{
+  String? error ;
+  SocialGetCommentsErrorState(this.error);
+}
+
+class SocialAddCommentsSuccessState extends SocialStates{}
+
+class SocialAddCommentsErrorState extends SocialStates{
+  String? error ;
+  SocialAddCommentsErrorState(this.error);
 }

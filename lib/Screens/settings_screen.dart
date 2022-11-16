@@ -10,10 +10,13 @@ import '../Components.dart';
 import 'Constants.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+
+  var commentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+
+
     return BlocConsumer<SocialCubit,SocialStates>
       (listener: (context,states){},
       builder: (context,states){
@@ -176,7 +179,8 @@ class SettingsScreen extends StatelessWidget {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context , index)=> Components.postTile(SocialCubit.get(context).myPosts[index] , userModel , context , index),
+                  itemBuilder: (context , index)=> Components.postTile(SocialCubit.get(context).myPosts[index] ,
+                      userModel , context , index, commentController),
                   itemCount: SocialCubit.get(context).myPosts.length,
 
                 )

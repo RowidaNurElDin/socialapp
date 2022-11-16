@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socialapp/Cubits/SocialCubit/states.dart';
 import 'package:socialapp/Models/UserModel.dart';
+import 'package:socialapp/Models/comment_model.dart';
 import 'package:socialapp/Models/like_model.dart';
 import 'package:socialapp/Screens/chats_screen.dart';
 import 'package:socialapp/Screens/new_post_screen.dart';
@@ -42,6 +43,8 @@ class SocialCubit extends Cubit<SocialStates> {
   List<String> postsIDs = [];
   List<UserModel> allUsers = [];
   List<MessageModel> messages = [];
+  List<LikeModel> tmpLikesList = [];
+
 
   void getUserData() {
     FirebaseFirestore.instance.collection('users').doc(uID).get().then((value) {
@@ -254,6 +257,7 @@ class SocialCubit extends Cubit<SocialStates> {
       image: userModel!.image,
       dateTime: dateTime,
       post: post,
+      isLiked: false,
       postImage: postImg ?? "",
     );
 
@@ -268,6 +272,7 @@ class SocialCubit extends Cubit<SocialStates> {
   }
 
   void getMyPosts() {
+    myPosts = [];
     for (int i = 0; i < allPosts.length; i++) {
       if (allPosts[i].uID == uID) {
         myPosts.add(allPosts[i]);
@@ -275,18 +280,60 @@ class SocialCubit extends Cubit<SocialStates> {
     }
   }
 
-  List<LikeModel> tmpLikesList = [];
+  // void getPosts() {
+  //   emit(SocialGetPostsLoadingState());
+  //   FirebaseFirestore
+  //       .instance
+  //       .collection('allPosts')
+  //       .get()
+  //       .then((value) {
+  //     for (var element in value.docs) {
+  //       element.reference.collection('likes').get().then((value) {
+  //         var likesList = value.docs.map((e) {
+  //           Map value = e.data();
+  //           tmpLikesList.add(LikeModel.fromJson(value));
+  //           return value;
+  //         }).toList();
+  //         print(likesList);
+  //         PostModel tmpPost = PostModel.fromJson(element.data());
+  //
+  //         for (LikeModel like in tmpLikesList) {
+  //           if(like.uID == uID) {
+  //             tmpPost.isLiked= true;
+  //           }
+  //           tmpPost.likes.add(like);
+  //         }
+  //
+  //         postsIDs.add(element.id);
+  //         allPosts.add(tmpPost);
+  //         getMyPosts();
+  //         tmpLikesList.clear();
+  //         //print(tmpPost.likes.length);
+  //       }).catchError((error) {});
+  //     }
+  //     emit(SocialGetPostsSuccessState());
+  //   }).catchError((error) {
+  //     print(error);
+  //     emit(SocialGetPostsErrorState(error.toString()));
+  //   });
+  // }
+
+
 
   void getPosts() {
+   // allPosts = [];
     emit(SocialGetPostsLoadingState());
-    FirebaseFirestore.instance.collection('allPosts').get().then((value) {
-      for (var element in value.docs) {
+    FirebaseFirestore
+        .instance
+        .collection('allPosts')
+        .orderBy('dateTime')
+        .snapshots()
+        .listen((event) {
+          allPosts = [];
+      event.docs.forEach((element) {
         element.reference.collection('likes').get().then((value) {
-          //  likes.add(value.docs.length);
-
           var likesList = value.docs.map((e) {
             Map value = e.data();
-          //  value['uID'] = e.id;
             tmpLikesList.add(LikeModel.fromJson(value));
             return value;
           }).toList();
@@ -294,66 +341,182 @@ class SocialCubit extends Cubit<SocialStates> {
           PostModel tmpPost = PostModel.fromJson(element.data());
 
           for (LikeModel like in tmpLikesList) {
+            if(like.uID == uID) {
+              tmpPost.isLiked= true;
+            }
             tmpPost.likes.add(like);
-            // print(allUsers.length);
-            // for (UserModel user in allUsers) {
-            //   print("inside loop");
-            //   print(like.uID);
-            //   print(user.uID);
-            //   if (like.uID == user.uID) {
-            //     print("inside if");
-            //     UserModel newUser = user;
-            //     print(newUser.name);
-            //     tmpPost.likers.add(newUser);
-            //   }
-            // }
           }
 
           postsIDs.add(element.id);
           allPosts.add(tmpPost);
           getMyPosts();
           tmpLikesList.clear();
-          //print(tmpPost.likes.length);
-        }).catchError((error) {});
-      }
-      emit(SocialGetPostsSuccessState());
-    }).catchError((error) {
-      print(error);
-      emit(SocialGetPostsErrorState(error.toString()));
+        }).catchError((error) {
+          emit(SocialLikePostsErrorState(error));
+        });
+      });
     });
   }
 
-  // void getMyPosts(){
-  //   emit(SocialGetPostsLoadingState());
-  //   FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(uID)
-  //       .collection('myPosts').get().then((value){
-  //     value.docs.forEach((element) {
-  //       myPosts.add(PostModel.fromJson(element.data()));
-  //     });
+  // void likePost(String postID) {
   //
-  //     emit(SocialGetPostsSuccessState());
-  //   }).catchError((error){
+  //   for(int i = 0 ; i < allPosts.length ; i++){
+  //     print("in loop");
+  //     if(postsIDs[i] == postID){
+  //       print("found post");
+  //       print(allPosts[i].isLiked);
+  //       if(allPosts[i].isLiked == false){
+  //         print("in like if");
+  //         FirebaseFirestore.instance
+  //             .collection('allPosts')
+  //             .doc(postID)
+  //             .collection('likes')
+  //             .doc(uID)
+  //             .set({'uID': uID , 'name' : userModel!.name , 'image' : userModel!.image}).then((value) {
+  //           FirebaseFirestore.instance.collection('allPosts').doc(postID).update({'isLiked' : true});
+  //               allPosts[i].isLiked = true;
+  //           print("like");
+  //           emit(SocialLikePostsSuccessState());
+  //         }).catchError((error) {
+  //           print("like error");
+  //           emit(SocialLikePostsSuccessState());
+  //         });
   //
-  //     print(error);
-  //     emit(SocialGetPostsErrorState(error.toString()));
+  //       }
+  //       else if(allPosts[i].isLiked  == true){
+  //         print("in unlike if");
+  //         FirebaseFirestore.instance
+  //             .collection('allPosts')
+  //             .doc(postID)
+  //             .collection('likes').doc(uID).delete().then((value) {
+  //           FirebaseFirestore.instance.collection('allPosts').doc(postID).update({'isLiked' : false});
   //
-  //   });
+  //           allPosts[i].isLiked  = false;
+  //           print("unlike");
+  //           emit(SocialUnlikePostsSuccessState());
+  //         }).catchError((error) {
+  //           print("unlike error");
+  //
+  //           emit(SocialUnlikePostsSuccessState());
+  //         });
+  //       }
+  //
+  //
+  //
+  //     }
+  //
+  //   }
   // }
 
-  void likePost(String postID) {
-    print(postsIDs.length);
+  void likePost({required String postID})
+  {
+    for(int i = 0 ; i < allPosts.length ; i++){
+      if(postsIDs[i] == postID){
 
+        if(allPosts[i].isLiked == false){
+        FirebaseFirestore.instance
+                      .collection('allPosts')
+                      .doc(postID)
+                      .collection('likes')
+                      .doc(uID)
+                      .set({'uID': uID ,
+                            'name' : userModel!.name ,
+                            'image' : userModel!.image}).then((value) {
+                    FirebaseFirestore
+                        .instance
+                        .collection('allPosts')
+                        .doc(postID).update({'isLiked' : true});
+                    emit(SocialLikePostsSuccessState());
+          }).catchError((error) {
+            emit(SocialLikePostsErrorState(error));
+          });
+        }
+
+        else if(allPosts[i].isLiked == true){
+          FirebaseFirestore.instance
+              .collection('allPosts')
+              .doc(postID)
+              .collection('likes').doc(uID).delete().then((value) {
+            FirebaseFirestore
+                .instance
+                .collection('allPosts')
+                .doc(postID)
+                .update({'isLiked' : false});
+            emit(SocialUnlikePostsSuccessState());
+          }).catchError((error) {
+
+            emit(SocialUnlikePostsSuccessState());
+          });
+        }
+
+
+      }
+    }
+
+  }
+
+  void getPostLikes({required String postID}) {
+    emit(SocialGetCommentsLoadingState());
     FirebaseFirestore.instance
         .collection('allPosts')
         .doc(postID)
         .collection('likes')
-        .doc(uID)
-        .set({'like': true}).then((value) {
-      emit(SocialLikePostsSuccessState());
+        .snapshots()
+        .listen((event) {
+      for(int i =0 ; i < allPosts.length ; i++){
+        if(postsIDs[i] == postID){
+          allPosts[i].likes = [];
+          event.docs.forEach((element) {
+            allPosts[i].likes.add(LikeModel.fromJson(element.data()));
+          });
+          emit(SocialGetLikesSuccessState());
+        }
+      }
+
+    });
+  }
+
+  void addComment({
+    required String text,
+    required String postID}) {
+
+    CommentModel newComment = CommentModel(
+      uID: userModel!.uID,
+      image: userModel!.image,
+      name: userModel!.name,
+      text: text,
+      postID: postID
+    );
+    FirebaseFirestore.instance
+        .collection('allPosts')
+        .doc(postID)
+        .collection('comments')
+        .add(newComment.toMap())
+        .then((value) {
+      emit(SocialAddCommentsSuccessState());
     }).catchError((error) {
-      emit(SocialLikePostsSuccessState());
+      emit(SocialAddCommentsErrorState(error));
+    });
+  }
+
+  void getPostComments({required String postID}) {
+    emit(SocialGetCommentsLoadingState());
+    FirebaseFirestore.instance
+        .collection('allPosts')
+        .doc(postID)
+        .collection('comments')
+        .snapshots()
+        .listen((event) {
+          for(int i =0 ; i < allPosts.length ; i++){
+            if(postsIDs[i] == postID){
+              allPosts[i].comments = [];
+              event.docs.forEach((element) {
+                allPosts[i].comments.add(CommentModel.fromJson(element.data()));
+              });
+              emit(SocialGetCommentsSuccessState());
+            }
+          }
+
     });
   }
 
@@ -373,6 +536,8 @@ class SocialCubit extends Cubit<SocialStates> {
       });
     }
   }
+
+
 
   void sendMessage({required String receiverID,
     required String dateTime,

@@ -9,22 +9,20 @@ import 'package:socialapp/Components.dart';
 import 'Constants.dart';
 
 class TimelineScreen extends StatelessWidget {
-  const TimelineScreen({Key? key}) : super(key: key);
-
+  var commentController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    var userModel = SocialCubit.get(context).userModel;
 
-    return BlocConsumer<SocialCubit,SocialStates>(
-        listener: (context,states){},
-      builder: (context,states){
-      return ConditionalBuilder(
-          condition: SocialCubit.get(context).userModel != null,
-          builder:(context)=> SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+    return Builder(builder: (context){
+      var userModel = SocialCubit.get(context).userModel;
+      return BlocConsumer<SocialCubit, SocialStates>(
+        listener: (context, states) {},
+        builder: (context, states) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Column(
+              child: userModel != null ? Column(
                 children: [
                   Card(
                     elevation: 12,
@@ -41,7 +39,6 @@ class TimelineScreen extends StatelessWidget {
                             ),
                             fit: BoxFit.cover,
                             width: double.infinity,
-
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
@@ -54,25 +51,36 @@ class TimelineScreen extends StatelessWidget {
                             ),
                           ),
                         ],
-                      ) ,
+                      ),
                     ),
                   ),
-                  if(states is SocialGetPostsLoadingState)
-                    Center(child: CircularProgressIndicator()),
+                  if (states is SocialGetPostsLoadingState)
+                    const Center(child: CircularProgressIndicator()),
                   ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context , index) => Components.postTile(SocialCubit.get(context).allPosts[index] ,userModel! ,  context , index),
-                      itemCount: SocialCubit.get(context).allPosts.length,
-
-                    )
-
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      SocialCubit.get(context).getPostComments(
+                          postID:
+                          SocialCubit.get(context).postsIDs[index]);
+                      SocialCubit.get(context).getPostLikes(
+                          postID: SocialCubit.get(context).postsIDs[index]);
+                      return Components.postTile(
+                          SocialCubit.get(context).allPosts[index],
+                          userModel,
+                          context,
+                          index,
+                          commentController);
+                    },
+                    itemCount: SocialCubit.get(context).allPosts.length,
+                  ),
                 ],
-              ),
+              )
+                  : const Center(child: CircularProgressIndicator()),
             ),
-          ),
-          fallback: (context) => Center(child: CircularProgressIndicator()));
-    },
-    );
+          );
+        },
+      );
+    });
   }
 }
