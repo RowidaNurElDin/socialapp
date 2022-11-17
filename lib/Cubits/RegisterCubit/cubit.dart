@@ -9,6 +9,8 @@ import 'package:socialapp/Screens/Constants.dart';
 import 'package:socialapp/Screens/home_screen.dart';
 import 'package:socialapp/Shared%20Prefrences/shared_pref.dart';
 
+import '../../Components.dart';
+
 class RegisterCubit extends Cubit<RegisterStates> {
   RegisterCubit() : super(InitialState());
 
@@ -33,8 +35,14 @@ class RegisterCubit extends Cubit<RegisterStates> {
           name: name, email: email, phone: phone, uID: uID, context: context);
       emit(RegisterSuccessState());
     }).catchError((error) {
+
+      if( error is FirebaseAuthException){
+        Components.showToastFunction(error.message.toString(), false);
+        print(error.code);
+        emit(RegisterErrorState());
+
+      }
       print(error.toString());
-      emit(RegisterErrorState());
     });
   }
 
@@ -62,13 +70,17 @@ class RegisterCubit extends Cubit<RegisterStates> {
         .set(newUser.toMap())
         .then((value) {
       print("before nav");
+      uID = uID;
+      CacheHelper.saveData(key: 'uID', value: uID);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (BuildContext context) => SocialHomeScreen()));
 
       emit(CreateUserSuccessState());
     }).catchError((error) {
-      print(error.toString());
+
+     // print(error.toString());
       emit(CreateUserErrorState());
+
     });
   }
 }

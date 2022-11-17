@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socialapp/Cubits/SocialCubit/cubit.dart';
 import 'package:socialapp/Cubits/SocialCubit/states.dart';
 import 'package:socialapp/Components.dart';
+import 'package:socialapp/Screens/edit_profile_screen.dart';
+import 'package:socialapp/Screens/new_post_screen.dart';
 
 import 'Constants.dart';
 
@@ -26,28 +28,53 @@ class TimelineScreen extends StatelessWidget {
                 children: [
                   Card(
                     elevation: 12,
+                    color: Colors.transparent,
                     child: Container(
-                      height: 190,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      height: 120,
+                      color: Colors.transparent,
                       child: Stack(
-                        children: const [
-                          Image(
-                            image: NetworkImage(
-                              'https://img.freepik.com/free-photo/networking-concept-still-life-arrangement_23-2149035784.jpg?w=1060&t=st=1668172631~exp=1668173231~hmac=d9e2bdc891cba22c6bece791c8c98259826aa8417abec124743170783932790a',
+                        children:  [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(25.0),
+                            child: Image(
+                              image: NetworkImage(
+                                'https://img.freepik.com/free-photo/sea-cloudy-sky-during-breathtaking-colorful-sunset_181624-22489.jpg?w=740&t=st=1668690386~exp=1668690986~hmac=e063600d2476f8bda8f5792540bda4efe44c3a70e0c51af3199c3430d4329bb6',
+                              ),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
                             ),
-                            fit: BoxFit.cover,
-                            width: double.infinity,
                           ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              " Stay Connected!",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                height: 100,
+                                child:
+                                TextField(
+                                  onTap: (){
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(builder: (BuildContext context) => NewPostScreen()));
+                                  },
+                                  maxLines: 8,
+                                  decoration: InputDecoration(
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      hintText: "What's on your mind?",
+                                      hintStyle: TextStyle(
+                                        color: Colors.grey[500],
+                                        fontSize: 18,
+                                      ),
+                                      contentPadding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20.0),
+                                      border: OutlineInputBorder(
+                                        borderSide:
+                                        BorderSide(color: Colors.grey[500]!, width: 1.0),
+                                        borderRadius:
+                                        BorderRadius.all(Radius.circular(25.0)),
+                                      ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -55,7 +82,7 @@ class TimelineScreen extends StatelessWidget {
                     ),
                   ),
                   if (states is SocialGetPostsLoadingState)
-                    const Center(child: CircularProgressIndicator()),
+                     Center(child: CircularProgressIndicator(color: Constants.mainColor!,)),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -76,7 +103,7 @@ class TimelineScreen extends StatelessWidget {
                   ),
                 ],
               )
-                  : const Center(child: CircularProgressIndicator()),
+                  :  Center(child: CircularProgressIndicator(color: Constants.mainColor!)),
             ),
           );
         },

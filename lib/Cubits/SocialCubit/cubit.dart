@@ -1,16 +1,17 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socialapp/Cubits/SocialCubit/states.dart';
 import 'package:socialapp/Models/UserModel.dart';
 import 'package:socialapp/Models/comment_model.dart';
 import 'package:socialapp/Models/like_model.dart';
 import 'package:socialapp/Screens/chats_screen.dart';
+import 'package:socialapp/Screens/home_screen.dart';
 import 'package:socialapp/Screens/new_post_screen.dart';
-import 'package:socialapp/Screens/settings_screen.dart';
+import 'package:socialapp/Screens/profile_screen.dart';
 import 'package:socialapp/Screens/timeline_screen.dart';
-import 'package:socialapp/Screens/users_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../Models/message_model.dart';
 import '../../Models/post_model.dart';
@@ -29,13 +30,11 @@ class SocialCubit extends Cubit<SocialStates> {
   File? profileImage;
   File? coverImage;
   File? postImage;
-  List<String> titles = ["Timeline", "Chats", "", "Users", "Settings"];
+  List<String> titles = ["Timeline", "Chats", ""];
   List<Widget> screens = [
     TimelineScreen(),
     ChatsScreen(),
-    NewPostScreen(),
-    UsersScreen(),
-    SettingsScreen(),
+    ProfileScreen(),
   ];
   List<PostModel> allPosts = [];
   List<PostModel> myPosts = [];
@@ -57,15 +56,8 @@ class SocialCubit extends Cubit<SocialStates> {
   }
 
   void changeBottomNavIndex(int index) {
-    // if (index == 1) {
-    //   getAllUsers();
-    // }
-    if (index == 2) {
-      emit(SocialAddPostState());
-    } else {
-      currentIndex = index;
-      emit(SocialChangeBottomNavState());
-    }
+    currentIndex = index;
+    emit(SocialChangeBottomNavState());
   }
 
   Future<void> getProfileImage() async {
@@ -222,6 +214,7 @@ class SocialCubit extends Cubit<SocialStates> {
   void createPostWithImage({
     required String dateTime,
     required String post,
+    context
   }) {
     emit(SocialCreatePostLoadingState());
 
@@ -235,7 +228,7 @@ class SocialCubit extends Cubit<SocialStates> {
         .then((value) {
       value.ref.getDownloadURL().then((value) {
         print(value);
-        createNewPost(dateTime: dateTime, post: post, postImg: value);
+        createNewPost(dateTime: dateTime, post: post, postImg: value , context: context);
 
         emit(SocialUploadPostPicSuccessState());
       }).catchError((error) {
@@ -248,7 +241,7 @@ class SocialCubit extends Cubit<SocialStates> {
 
   //Create post without an Image
   void createNewPost(
-      {required String dateTime, required String post, String? postImg}) {
+      {required String dateTime, required String post, String? postImg , context}) {
     emit(SocialCreatePostLoadingState());
 
     PostModel newPost = PostModel(
@@ -265,6 +258,9 @@ class SocialCubit extends Cubit<SocialStates> {
         .collection('allPosts')
         .add(newPost.toMap())
         .then((value) {
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder:
+              (BuildContext context) => SocialHomeScreen()));
       emit(SocialCreatePostSuccessState());
     }).catchError((error) {
       emit(SocialCreatePostErrorState());

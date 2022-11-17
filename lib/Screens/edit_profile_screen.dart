@@ -20,13 +20,13 @@ class EditProfileScreen extends StatelessWidget {
     return BlocConsumer<SocialCubit,SocialStates>
       (listener: (context,states){},
       builder: (context,states){
-        var userModel = SocialCubit.get(context).userModel;
+        var userModel = SocialCubit.get(context).userModel!;
         var profileImage = SocialCubit.get(context).profileImage;
         var coverImage = SocialCubit.get(context).coverImage;
 
-        nameController.text = userModel!.name??"";
-        bioController.text = userModel!.bio??"";
-        phoneController.text = userModel!.phone??"";
+        nameController.text = userModel.name??"";
+        bioController.text = userModel.bio??"";
+        phoneController.text = userModel.phone??"";
 
         return Scaffold(
           appBar:PreferredSize(
@@ -42,7 +42,7 @@ class EditProfileScreen extends StatelessWidget {
                   child: const Text("Update" ,
                     style: TextStyle(
                         color: Colors.green
-                    ),))], context),
+                    ),))], context,Constants.mainColor!),
           ),
           body: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -50,7 +50,7 @@ class EditProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   if(states is SocialUpdateUserLoadingState)
-                    LinearProgressIndicator(),
+                    LinearProgressIndicator(color: Constants.mainColor!),
                   const SizedBox(height: 5,),
                   Container(
                     height: 180,
@@ -112,7 +112,7 @@ class EditProfileScreen extends StatelessWidget {
                                   backgroundColor: Colors.white,
                                   child: CircleAvatar(
                                     radius: 50,
-                                    backgroundImage: profileImage == null ? NetworkImage(userModel!.image!):
+                                    backgroundImage: profileImage == null ? NetworkImage(userModel.image!):
                                     FileImage(profileImage) as ImageProvider              ),
                                 ),
                               ),

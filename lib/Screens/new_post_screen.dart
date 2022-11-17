@@ -31,28 +31,29 @@ class NewPostScreen extends StatelessWidget {
             child: Components.defaultAppBar('Create Post',[TextButton(
                 onPressed: (){
                   var now = DateTime.now();
+                  var date = "${now.day.toString()} - ${now.month.toString()} - ${now.year.toString()} at ${now.hour.toString()} : ${now.minute.toString()} ";
                   if(SocialCubit.get(context).postImage == null){
                     SocialCubit.get(context).createNewPost(
-                        dateTime: now.toString() ,
-                        post: postController.text);
+                        dateTime: date ,
+                        post: postController.text, context: context);
                   }else{
                     SocialCubit.get(context).createPostWithImage(
-                        dateTime: now.toString(),
-                        post: postController.text);
+                        dateTime:date,
+                        post: postController.text , context: context);
                     
                   }
                   
                 },
-                child: const Text("Post" ,
+                child: Text("Post" ,
                   style: TextStyle(
-                      color: Colors.green
-                  ),))], context),),
+                      color: Constants.mainColor!
+                  ),))], context , Constants.mainColor!),),
           body: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
               children: [
                 if(states is SocialCreatePostLoadingState)
-                  LinearProgressIndicator(),
+                  LinearProgressIndicator(color: Constants.mainColor!),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -67,7 +68,7 @@ class NewPostScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 10,),
-                            Text(userModel!.name??"User name",
+                            Text(userModel.name??"User name",
                               overflow: TextOverflow.fade,
                               style: const TextStyle(
                                   fontSize: 15,

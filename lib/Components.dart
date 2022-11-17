@@ -22,9 +22,12 @@ class Components{
   static Widget myTextField(TextEditingController controller , text , Icon icon) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 15.0),
     child: TextField(
+
       controller: controller,
       onChanged: (value) {},
       decoration: InputDecoration(
+        fillColor: Colors.white,
+          filled: true,
           prefixIcon: icon,
           hintText: text,
           hintStyle: TextStyle(
@@ -34,16 +37,22 @@ class Components{
           contentPadding: const EdgeInsets.symmetric(
               vertical: 10.0, horizontal: 20.0),
           border: OutlineInputBorder(
+            borderSide:
+            BorderSide(color: Colors.grey[500]!, width: 1.0),
             borderRadius:
-            BorderRadius.all(Radius.circular(7.0)),
+            BorderRadius.all(Radius.circular(30.0)),
           ),
           enabledBorder: OutlineInputBorder(
             borderSide:
             BorderSide(color: Colors.grey[500]!, width: 1.0),
-            borderRadius: BorderRadius.all(
-              Radius.circular(7.0),
-            ),
-          )),
+            borderRadius:BorderRadius.all(Radius.circular(30.0)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide:
+            BorderSide(color: Colors.orange[200]!, width: 3.0),
+            borderRadius:BorderRadius.all(Radius.circular(30.0)),
+          )
+      ),
     ),
   );
 
@@ -54,7 +63,9 @@ class Components{
       controller: controller,
       onChanged: (value) {},
       decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.password),
+          fillColor: Colors.white,
+          filled: true,
+          prefixIcon:  Icon(Icons.password, color: Colors.orange[200]),
           hintText: text,
           // ignore: prefer_const_constructors
           hintStyle: TextStyle(
@@ -65,14 +76,19 @@ class Components{
               vertical: 10.0, horizontal: 20.0),
           border: const OutlineInputBorder(
             borderRadius:
-            BorderRadius.all(Radius.circular(7.0)),
+            BorderRadius.all(Radius.circular(30)),
           ),
           enabledBorder: OutlineInputBorder(
             borderSide:
             BorderSide(color: Colors.grey[500]!, width: 1.0),
             borderRadius: const BorderRadius.all(
-              Radius.circular(7.0),
+              Radius.circular(30),
             ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide:
+            BorderSide(color: Colors.orange[200]!, width: 3.0),
+            borderRadius:BorderRadius.all(Radius.circular(30.0)),
           )),
     ),
   );
@@ -98,12 +114,12 @@ class Components{
             ),
           ),
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Constants.mainColor!),
+            backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF6FB3B1)),
 
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      side: BorderSide(color: Constants.mainColor!))))),
+                      side: BorderSide(color: Color(0xFF6FB3B1)))))),
     ),
   );
 
@@ -112,7 +128,8 @@ class Components{
     children: [
       Text(preTxt ,
         style: TextStyle(
-            color: Colors.grey
+            color: Colors.white,
+          fontWeight: FontWeight.bold
         ),),
       TextButton(onPressed:(){
         Navigator.of(context).pushReplacement(
@@ -120,7 +137,8 @@ class Components{
       },
           child: Text(txt,
             style: TextStyle(
-                color: Constants.mainColor
+                color: Constants.mainColor,
+                fontWeight: FontWeight.bold
             ),))
     ],
   );
@@ -149,19 +167,20 @@ class Components{
     ],
   );
 
-  static showToastFunction(String txt){
+  static showToastFunction(String txt , bool isGreen){
     Fluttertoast.showToast(
         msg: txt,
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.SNACKBAR,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
+        backgroundColor: isGreen == true ? Colors.green : Colors.redAccent,
         textColor: Colors.white,
         fontSize: 15.0);
   }
 
   static Widget postTile(PostModel post , UserModel user ,context
       , index , TextEditingController commentController) => Card(
+
     elevation: 12,
     child: Container(
       width: double.infinity,
@@ -288,9 +307,6 @@ class Components{
                                   : Center(child:Text("No likes yet."))
 
 
-
-
-
                           );
                         } );
                   },
@@ -304,20 +320,142 @@ class Components{
                     ),),
                   ],),
                 ),
-                Row(
-                  children: [
-                    Row(children: [
-                      Icon(Icons.chat_bubble_outline_outlined,
-                          size: 20,
-                          color: Colors.yellow[700] ),
-                      Text("  ${post.comments.length} Comments" , style: TextStyle(
-                          fontSize: 12 ,
-                          color: Colors.grey[700],
-                          fontFamily: 'Roboto'
-                      ),)
-                    ],),
+                InkWell(
+                  onTap: (){
+                    showModalBottomSheet(
+                        context: context,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        isScrollControlled: true,
+                        enableDrag: true,
+                        builder: (context){
+                          return Container(
 
-                  ],
+                              height: 350,
+
+                              decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadiusDirectional.only(
+                                      topStart: Radius.circular(30),
+                                      topEnd: Radius.circular(30)
+                                  ),
+
+                              ),
+                              margin: EdgeInsets.only(
+                                  bottom: MediaQuery.of(context).viewInsets.bottom),
+
+                              child: Padding(
+                                padding:  const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if(post.comments.isNotEmpty)
+                                      Expanded(
+                                        child: ListView.separated(
+                                            itemBuilder: (context , index){
+                                              return  Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 18,
+                                                    backgroundImage:NetworkImage(post.comments[index].image!),
+                                                  ),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.only(left : 5.0),
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(post.comments[index].name! ,
+                                                            overflow: TextOverflow.fade,
+                                                            style: const TextStyle(
+                                                                fontSize: 12,
+                                                                color: Colors.black
+                                                            ),),
+                                                          SizedBox(height: 5,),
+                                                          Text(post.comments[index].text! ,
+                                                            style: const TextStyle(
+                                                                fontSize: 15,
+                                                                color: Colors.black
+                                                            ),),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  )
+
+                                                ],
+                                              );
+                                            },
+                                            physics: BouncingScrollPhysics(),
+                                            separatorBuilder: (context,index)=> const Divider(thickness: 1,),
+                                            itemCount: post.comments.length),
+                                      )
+                                    else
+                                      Spacer(),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            keyboardType: TextInputType.multiline,
+                                            maxLines: null,
+                                            controller : commentController ,
+                                            decoration: InputDecoration(
+                                              hintText: "write comment .. ",
+                                              hintStyle: TextStyle(
+                                                fontSize: 15,
+                                                fontStyle: FontStyle.italic,
+                                                color: Colors.grey[500],
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              border: OutlineInputBorder(
+                                                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                                                  borderSide: BorderSide(color: Constants.mainColor!, width: 1.0)),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide:
+                                                BorderSide(color: Color(0xFFF78D82), width: 3.0),
+                                                borderRadius:BorderRadius.all(Radius.circular(30.0)),
+                                              ),
+                                              contentPadding: const EdgeInsets.all(5),
+
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                            onPressed: (){
+                                              Navigator.pop(context);
+                                              SocialCubit.get(context).addComment(
+                                                  text: commentController.text,
+                                                  postID: SocialCubit.get(context).postsIDs[index]);
+                                              commentController.clear();
+                                              FocusManager.instance.primaryFocus?.unfocus();
+                                            },
+                                            icon: Icon(IconlyBroken.send, color: Constants.mainColor,))
+                                      ],
+                                    )
+
+                                  ],
+                                ),
+                              )
+
+                          );
+                        } );
+                  },
+                  child: Row(
+                    children: [
+                      Row(children: [
+                        Icon(Icons.chat_bubble_outline_outlined,
+                            size: 20,
+                            color: Constants.mainColor),
+                        Text("  ${post.comments.length} Comments" , style: TextStyle(
+                            fontSize: 12 ,
+                            color: Colors.grey[700],
+                            fontFamily: 'Roboto'
+                        ),)
+                      ],),
+
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -345,9 +483,12 @@ class Components{
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
+                            isScrollControlled: true,
                             builder: (context){
                               return Container(
                                   height: 350,
+                                  margin: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context).viewInsets.bottom),
                                   decoration: const BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadiusDirectional.only(
@@ -356,8 +497,9 @@ class Components{
                                       )
                                   ),
                                   child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding:  const EdgeInsets.all(8.0),
                                     child: Column(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         if(post.comments.isNotEmpty)
                                           Expanded(
@@ -420,6 +562,11 @@ class Components{
                                                   border: OutlineInputBorder(
                                                       borderRadius: const BorderRadius.all(Radius.circular(30.0)),
                                                       borderSide: BorderSide(color: Constants.mainColor!, width: 1.0)),
+                                                  focusedBorder: OutlineInputBorder(
+                                                  borderSide:
+                                                  BorderSide(color: Color(0xFFF78D82), width: 3.0),
+                                                  borderRadius:BorderRadius.all(Radius.circular(30.0)),
+                                                  ),
                                                   contentPadding: const EdgeInsets.all(5),
 
                                                 ),
@@ -491,15 +638,16 @@ class Components{
     ),
   );
 
-  static Widget defaultAppBar(String title, List<Widget> actions , BuildContext context)=> AppBar(
+  static Widget defaultAppBar(String title, List<Widget> actions , BuildContext context , Color color)=> AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,
     title: Text(title ,
     style: TextStyle(
       color: Constants.mainColor,
+      fontWeight: FontWeight.bold
     ),),
     leading: IconButton(
-      icon: Icon(IconlyBroken.arrowLeftCircle , color: Constants.mainColor,),
+      icon: Icon(IconlyBroken.arrowLeftCircle , color: color , size: 30,),
       onPressed: (){
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (BuildContext context) => SocialHomeScreen()));
@@ -508,31 +656,40 @@ class Components{
     actions: actions,
   );
 
-  static Widget chatTile(UserModel userModel , context) => InkWell(
+  static Widget chatTile(UserModel userModel , context) =>
+      InkWell(
     onTap: (){
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (BuildContext context) => ChatDetailsScreen(thisUserModel: userModel,)));
 
     },
-    child: Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundImage:NetworkImage(userModel.image!),
+    child: Card(
+      color: Constants.mainColor!.withOpacity(0.5),
+      elevation: 10,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      child:Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage:NetworkImage(userModel.image!),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0 , left: 8),
+                  child: Text(userModel.name! ,
+                    overflow: TextOverflow.fade,
+                    style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black
+                    ),),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 12.0 , left: 8),
-              child: Text(userModel.name! ,
-                overflow: TextOverflow.fade,
-                style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.black
-                ),),
-            ),
-          ],
         ),
     ),
   );
@@ -548,7 +705,7 @@ class Components{
                 bottomEnd: Radius.circular(15),
                 bottomStart:  Radius.circular(15)
             ),
-            color: Constants.mainColor!.withOpacity(0.5)
+            color:  Color(0xFFF78D82).withOpacity(0.2)
 
         ),
         child: Padding(

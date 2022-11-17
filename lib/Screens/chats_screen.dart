@@ -6,6 +6,7 @@ import 'package:socialapp/Components.dart';
 
 import '../Cubits/SocialCubit/cubit.dart';
 import '../Cubits/SocialCubit/states.dart';
+import 'Constants.dart';
 
 class ChatsScreen extends StatelessWidget {
   const ChatsScreen({Key? key}) : super(key: key);
@@ -24,7 +25,7 @@ class ChatsScreen extends StatelessWidget {
                 physics: BouncingScrollPhysics(),
                 separatorBuilder: (context , index) => Divider(thickness: 1,),
               ),
-              fallback: (context) => Center(child: CircularProgressIndicator(),));
+              fallback: (context) => Center(child: CircularProgressIndicator(color: Constants.mainColor!),));
 
         });
   }

@@ -8,6 +8,7 @@ import 'package:socialapp/Screens/home_screen.dart';
 import 'package:socialapp/Screens/splash_screen.dart';
 import 'package:socialapp/Screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:socialapp/Screens/tmp_screen.dart';
 import 'Cubits/LoginCubit/cubit.dart';
 import 'Cubits/RegisterCubit/cubit.dart';
 import 'Screens/Constants.dart';
@@ -20,7 +21,7 @@ Future<void> firebaseBackgroundHandler(RemoteMessage message) async{
   print("BACKGROUND MESSAGE");
 
   print(message.data.toString());
-  Components.showToastFunction("BACKGROUND MESSAGE");
+  Components.showToastFunction("BACKGROUND MESSAGE" , true);
 
 }
 
@@ -28,16 +29,16 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   var token = await FirebaseMessaging.instance.getToken();
-  print(token);
+  print("TOOKEENNN $token");
   FirebaseMessaging.onMessage.listen((event) {
     print(event.data.toString());
-    Components.showToastFunction("ON MESSAGE");
+    Components.showToastFunction("ON MESSAGE" , true);
   });
 
   FirebaseMessaging.onMessageOpenedApp.listen((event) {
     print(event.data.toString());
 
-    Components.showToastFunction("ON MESSAGE OPENED APP");
+    Components.showToastFunction("ON MESSAGE OPENED APP" ,true);
   });
 
   FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
@@ -46,11 +47,11 @@ void main() async{
 
   await CacheHelper.init();
   Widget widget ;
-  //uID = CacheHelper.getData(key: 'uID');
+  uID = CacheHelper.getData(key: 'uID');
   print(uID);
 
   if(uID == null){
-    widget = SplashScreen();
+    widget = TmpScreen();
   }else{
     widget = SocialHomeScreen();
   }
@@ -75,7 +76,11 @@ class SocialMain extends StatelessWidget {
 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home:SocialLogin()
+        theme: ThemeData(
+          fontFamily: 'Signika',
+
+        ),
+        home:startWidget
 
         ,
       ),

@@ -24,36 +24,36 @@ class SocialHomeScreen extends StatelessWidget {
         }
       },
         builder: (context,states){
-        var soialCubit = SocialCubit.get(context);
+        var socialCubit = SocialCubit.get(context);
         return Scaffold(
           appBar: AppBar(
             elevation: 0,
             backgroundColor: Colors.transparent,
             title: Text(
-              soialCubit.titles[soialCubit.currentIndex],
+              socialCubit.titles[socialCubit.currentIndex],
               style: TextStyle(
                 fontSize: 20,
+                fontWeight: FontWeight.bold,
                 color: Constants.mainColor
               ),
             ),
             actions: [
               IconButton(onPressed: (){}, icon: Icon(IconlyBroken.notification , color: Constants.mainColor,)),
-              IconButton(onPressed: (){}, icon: Icon(IconlyBroken.search , color: Constants.mainColor,)),
             ],
           ),
-          body:soialCubit.screens[soialCubit.currentIndex],
+          body:socialCubit.screens[socialCubit.currentIndex],
           bottomNavigationBar: BottomNavigationBar(
+            selectedItemColor: Color(0xFFF78D82),
+            unselectedItemColor: Constants.mainColor!,
 
             onTap: (index){
-              soialCubit.changeBottomNavIndex(index);
+              socialCubit.changeBottomNavIndex(index);
             },
-            currentIndex: 0 ,
-            items:[
-              BottomNavigationBarItem(icon:  Icon(IconlyBroken.home ,color: Constants.mainColor!, ) , label: '' ,),
-              BottomNavigationBarItem(icon:  Icon(IconlyBroken.chat,color: Constants.mainColor!) , label: ''),
-              BottomNavigationBarItem(icon:  Icon(IconlyBroken.upload ,color: Constants.mainColor!, ) , label: '' ,),
-              BottomNavigationBarItem(icon:  Icon(IconlyBroken.user2,color: Constants.mainColor!) , label: ''),
-              BottomNavigationBarItem(icon:  Icon(IconlyBroken.setting,color: Constants.mainColor!) , label: ''),
+            currentIndex: socialCubit.currentIndex,
+            items: const [
+              BottomNavigationBarItem(icon:  Icon(IconlyBroken.home, ) , label: '' ,),
+              BottomNavigationBarItem(icon:  Icon(IconlyBroken.chat) , label: ''),
+              BottomNavigationBarItem(icon:  Icon(IconlyBroken.profile) , label: ''),
 
             ],
           ),

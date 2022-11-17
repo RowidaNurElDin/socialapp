@@ -30,7 +30,7 @@ class ChatDetailsScreen extends StatelessWidget {
               return Scaffold(
                 appBar: AppBar(
                   titleSpacing: 0,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Constants.mainColor!.withOpacity(0.8),
                   title: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -50,7 +50,7 @@ class ChatDetailsScreen extends StatelessWidget {
                     ],
                   ),
                   leading: IconButton(
-                    icon: Icon(IconlyBroken.arrowLeftCircle , color: Constants.mainColor,),
+                    icon: Icon(IconlyBroken.arrowLeftCircle , color: Colors.white,),
                     onPressed: (){
                       Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (BuildContext context) => SocialHomeScreen()));
@@ -62,7 +62,7 @@ class ChatDetailsScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       if(states is SocialGetMessagesLoadingState)
-                        const Center(child: CircularProgressIndicator()),
+                         Center(child: CircularProgressIndicator(color: Constants.mainColor!)),
                       if(SocialCubit.get(context).messages.isNotEmpty)
                         Expanded(
                           child: ListView.builder(
@@ -99,6 +99,10 @@ class ChatDetailsScreen extends StatelessWidget {
                                 border: OutlineInputBorder(
                                     borderRadius: const BorderRadius.all(Radius.circular(30.0)),
                                     borderSide: BorderSide(color: Constants.mainColor!, width: 1.0)),
+                                focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color:  Color(0xFFF78D82), width: 3.0),
+                                borderRadius:BorderRadius.all(Radius.circular(30.0)),
+                                ),
                                 contentPadding: const EdgeInsets.all(5),
 
                               ),

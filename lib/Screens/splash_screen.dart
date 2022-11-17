@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../Components.dart';
+import 'Constants.dart';
 import 'login_screen.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 
@@ -23,9 +24,45 @@ class _SplashScreenState extends State<SplashScreen> {
     );
     return Scaffold(
       backgroundColor: Colors.white,
-      body: FadeIn(
-        child: Center(child: Components.mobileLogo()) ,
-        duration: Duration(seconds: 3),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/wallpaper1.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: FadeIn(
+          duration: Duration(seconds: 5),
+          child: Center(
+              child: Container(
+                height: 120,
+                width: 250,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(50)),
+                  boxShadow: [BoxShadow(blurRadius: 30, color: Colors.white, spreadRadius: 5)],
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("SPECTRUM" ,
+                          style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                            fontSize: 40,
+                            color: Constants.mainColor
+                        ),),
+                      Text("Homemade Facebook." ,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                            color: Constants.mainColor
+                        ),),
+                    ],
+                  ),
+                ),
+              )
+          ) ,
+        ),
       ),
     );
   }

@@ -9,7 +9,7 @@ import 'package:socialapp/Screens/edit_profile_screen.dart';
 import '../Components.dart';
 import 'Constants.dart';
 
-class SettingsScreen extends StatelessWidget {
+class ProfileScreen extends StatelessWidget {
 
   var commentController = TextEditingController();
 
@@ -89,12 +89,13 @@ class SettingsScreen extends StatelessWidget {
                         child: InkWell(
                           onTap: (){},
                           child: Column(
-                            children: const [
-                              Text("0" , style: TextStyle(
+                            children: [
+                              Text("${SocialCubit.get(context).myPosts.length}",
+                                style:const TextStyle(
                                   fontSize: 12,
                                   color: Colors.black
                               ),),
-                              Text("Posts" , style: TextStyle(
+                              const Text("Posts" , style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.black
                               ),)
@@ -175,7 +176,7 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
                 if(states is SocialGetPostsLoadingState)
-                  CircularProgressIndicator(),
+                  CircularProgressIndicator(color: Constants.mainColor!),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
